@@ -11,12 +11,12 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:tbe_pass}
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: ${JPA_SHOW_SQL:true}
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: UTC
 
@@ -30,5 +30,8 @@ jwt:
   expiration-ms: 86400000
 
 springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_API_DOCS_ENABLED:true}
   swagger-ui:
     path: /swagger-ui.html
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:true}
