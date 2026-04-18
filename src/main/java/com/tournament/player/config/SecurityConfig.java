@@ -51,8 +51,10 @@ public class SecurityConfig {
                                 "/api/players/login",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api/docs/**",
+                                "/swagger-ui/index.html",
                                 "/api/docs",
+                                "/api/docs/**",
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/webjars/**"
                         ).permitAll()
