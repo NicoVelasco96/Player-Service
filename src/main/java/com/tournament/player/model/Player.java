@@ -33,6 +33,7 @@ public class Player {
 
     private String steamDisplayName;
     private String steamAvatarUrl;
+    private String steamProfileUrl;
     private Integer steamLevel;
 
     @Enumerated(EnumType.STRING)

@@ -63,6 +63,7 @@ public class PlayerDTO {
         private String steamDisplayName;
         private String steamAvatarUrl;
         private Integer steamLevel;
+        private String steamProfileUrl;
         private PlayerStatus status;
         private LocalDateTime createdAt;
     }
@@ -72,6 +73,7 @@ public class PlayerDTO {
         private String steamId;
         private String displayName;
         private String avatarUrl;
+        private String profileUrl;
         private Integer level;
     }
 }

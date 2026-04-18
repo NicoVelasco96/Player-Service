@@ -83,6 +83,8 @@ public class PlayerService implements IPlayerService {
         if (profile != null) {
             player.setSteamDisplayName(profile.getDisplayName());
             player.setSteamAvatarUrl(profile.getAvatarUrl());
+            player.setSteamProfileUrl(profile.getProfileUrl());
+            player.setSteamLevel(profile.getLevel());
         }
     }
 
@@ -97,6 +99,8 @@ public class PlayerService implements IPlayerService {
         res.setSteamLevel(p.getSteamLevel());
         res.setStatus(p.getStatus());
         res.setCreatedAt(p.getCreatedAt());
+        res.setSteamProfileUrl(p.getSteamProfileUrl());
+        res.setSteamLevel(p.getSteamLevel());
         return res;
     }
 }

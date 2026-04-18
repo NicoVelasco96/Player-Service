@@ -22,31 +22,53 @@ public class SteamAPIClient {
     @Value("${steam.api.key}")
     private String apiKey;
 
-    public Mono<PlayerDTO.SteamProfileResponse> getPlayerSumary(String steamId){
+    public Mono<PlayerDTO.SteamProfileResponse> getPlayerSumary(String steamId) {
         if (apiKey == null || apiKey.isBlank()) {
             log.warn("STEAM_API_KEY no configurado — omitiendo enriquecimiento Steam.");
             return Mono.empty();
         }
 
-        return steamWebClient.get()
+        Mono<SteamSummaryWrapper> summaryMono = steamWebClient.get()
                 .uri(uri -> uri
                         .path("/ISteamUser/GetPlayerSummaries/v0002/")
                         .queryParam("key", apiKey)
                         .queryParam("steamids", steamId)
                         .build())
                 .retrieve()
-                .bodyToMono(SteamSummaryWrapper.class)
-                .mapNotNull(wrapper -> {
+                .bodyToMono(SteamSummaryWrapper.class);
+
+        Mono<Integer> levelMono = steamWebClient.get()
+                .uri(uri -> uri
+                        .path("/IPlayerService/GetSteamLevel/v1/")
+                        .queryParam("key", apiKey)
+                        .queryParam("steamid", steamId)
+                        .build())
+                .retrieve()
+                .bodyToMono(SteamLevelWrapper.class)
+                .mapNotNull(w -> w.getResponse() != null ? w.getResponse().getPlayerLevel() : null)
+                .onErrorResume(ex -> {
+                    log.error("Error obteniendo Steam level: {}", ex.getMessage());
+                    return Mono.just(0);
+                });
+
+        return Mono.zip(summaryMono, levelMono)
+                .mapNotNull(tuple -> {
+                    SteamSummaryWrapper wrapper = tuple.getT1();
+                    Integer level = tuple.getT2();
+
                     if (wrapper.getResponse() == null
                             || wrapper.getResponse().getPlayers() == null
                             || wrapper.getResponse().getPlayers().isEmpty()) {
                         return null;
                     }
+
                     SteamPlayer p = wrapper.getResponse().getPlayers().get(0);
                     PlayerDTO.SteamProfileResponse profile = new PlayerDTO.SteamProfileResponse();
                     profile.setSteamId(p.getSteamid());
                     profile.setDisplayName(p.getPersonaname());
                     profile.setAvatarUrl(p.getAvatarfull());
+                    profile.setProfileUrl(p.getProfileurl());
+                    profile.setLevel(level);
                     return profile;
                 })
                 .onErrorResume(ex -> {
@@ -70,8 +92,20 @@ public class SteamAPIClient {
         private String steamid;
         private String personaname;
         private String avatarfull;
+        private String profileurl;
 
         @JsonProperty("communityvisibilitystate")
         private Integer communityVisibilityState;
+    }
+
+    @Data
+    static class SteamLevelWrapper {
+        private SteamLevelResponse response;
+    }
+
+    @Data
+    static class SteamLevelResponse {
+        @JsonProperty("player_level")
+        private Integer playerLevel;
     }
 }
