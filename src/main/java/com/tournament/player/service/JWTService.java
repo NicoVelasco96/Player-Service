@@ -34,6 +34,16 @@ public class JWTService {
                 .compact();
     }
 
+    public String generateServiceToken() {
+        return Jwts.builder()
+                .subject("tournament-service")
+                .claim("role", "SERVICE")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000)) // 1 año
+                .signWith(key)
+                .compact();
+    }
+
     public String extractUsername(String token) {
         return parseClaims(token).getSubject();
     }

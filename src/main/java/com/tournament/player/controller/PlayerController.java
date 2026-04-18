@@ -63,6 +63,12 @@ public class PlayerController {
         return ResponseEntity.ok(playerService.getById(id));
     }
 
+    @GetMapping("/service-token")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<String> getServiceToken() {
+        return ResponseEntity.ok(jwtService.generateServiceToken());
+    }
+
     @PostMapping("/{id}/steam")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<PlayerDTO.PlayerResponse> linkSteam(
