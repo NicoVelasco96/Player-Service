@@ -5,6 +5,7 @@ import com.tournament.player.model.Player;
 import com.tournament.player.repository.IPlayerRepository;
 import com.tournament.player.service.JWTService;
 import com.tournament.player.service.IPlayerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,11 +58,13 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<PlayerDTO.PlayerResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(playerService.getById(id));
     }
 
     @PostMapping("/{id}/steam")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<PlayerDTO.PlayerResponse> linkSteam(
             @PathVariable Long id,
             @Valid @RequestBody PlayerDTO.LinkSteamRequest request) {

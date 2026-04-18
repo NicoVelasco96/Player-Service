@@ -28,7 +28,6 @@ public class AppConfig {
                         .title("Player Service API")
                         .version("1.0")
                         .description("Gestión de jugadores y perfiles Steam"))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()
