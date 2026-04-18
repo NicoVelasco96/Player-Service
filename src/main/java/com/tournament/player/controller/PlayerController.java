@@ -69,4 +69,9 @@ public class PlayerController {
                 playerService.linkSteamAccount(id, request.getSteamId())
         );
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
 }
