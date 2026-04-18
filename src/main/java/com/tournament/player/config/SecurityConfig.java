@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/players/register",
                                 "/api/players/login",
-                                "/api/players/*/steam",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
