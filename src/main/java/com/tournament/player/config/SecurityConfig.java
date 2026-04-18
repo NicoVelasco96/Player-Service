@@ -73,14 +73,10 @@ public class SecurityConfig {
                     throws ServletException, IOException {
 
                 String header = req.getHeader("Authorization");
-                System.out.println(">>> Authorization header: " + header);
                 if (header != null && header.startsWith("Bearer ")) {
                     String token = header.substring(7);
-                    System.out.println(">>> Token: " + token);
-                    System.out.println(">>> isValid: " + jwtService.isValid(token));
                     if (service.isValid(token)) {
                         String username = service.extractUsername(token);
-                        System.out.println(">>> Username: " + username);
                         var auth = new UsernamePasswordAuthenticationToken(
                                 username, null, Collections.emptyList());
                         SecurityContextHolder.getContext().setAuthentication(auth);
