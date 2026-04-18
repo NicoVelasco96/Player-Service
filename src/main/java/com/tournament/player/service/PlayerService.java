@@ -79,12 +79,11 @@ public class PlayerService implements IPlayerService {
     // ── Helpers ───────────────────────────────────────────────────────────────
     private void enrichWithSteam(Player player, String steamId) {
         player.setSteamId(steamId);
-        steamApiClient.getPlayerSumary(steamId)
-                .subscribe(profile -> {
-                    player.setSteamDisplayName(profile.getDisplayName());
-                    player.setSteamAvatarUrl(profile.getAvatarUrl());
-                    playerRepository.save(player);
-                });
+        PlayerDTO.SteamProfileResponse profile = steamApiClient.getPlayerSumary(steamId).block();
+        if (profile != null) {
+            player.setSteamDisplayName(profile.getDisplayName());
+            player.setSteamAvatarUrl(profile.getAvatarUrl());
+        }
     }
 
     private PlayerDTO.PlayerResponse toResponse(Player p) {
