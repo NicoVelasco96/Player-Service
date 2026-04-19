@@ -1,25 +1,186 @@
 # 🎮 Player Service
 
-Microservice responsible for player registration, authentication via JWT, and Steam account integration. Built with Spring Boot, PostgreSQL, and Spring Security.
+Escoge tu idioma / Choose your language:
+
+<details open>
+<summary><b>🇪🇸 Español</b></summary>
+
+## Resumen
+
+**Player Service** es un microservicio responsable del registro de jugadores, autenticación mediante JWT e integración con cuentas de Steam. Forma parte de una plataforma de gestión de torneos construida con arquitectura de microservicios.
+
+Este servicio se encarga de:
+- Registro y autenticación de jugadores
+- Seguridad stateless basada en JWT
+- Vinculación de cuentas de Steam y enriquecimiento de perfiles
+- Almacenamiento seguro de contraseñas con BCrypt
 
 ---
 
-## 📋 Table of Contents
+## Stack Tecnológico
 
-- [Overview](#overview)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [API Endpoints](#api-endpoints)
-- [Project Structure](#project-structure)
+| Capa | Tecnología |
+|---|---|
+| Lenguaje | Java 17 |
+| Framework | Spring Boot 4.0.5 |
+| Seguridad | Spring Security + JWT (jjwt 0.13) |
+| Base de Datos | PostgreSQL (vía Railway) |
+| ORM | Hibernate / Spring Data JPA |
+| Cliente HTTP | WebClient (WebFlux) |
+| Documentación | SpringDoc OpenAPI (Swagger UI) |
+| Build Tool | Gradle |
+| Utilidades | Lombok, Slf4j |
 
 ---
+
+## Arquitectura
+
+```
+PlayerController
+      │
+IPlayerService ──► PlayerService
+      │
+IPlayerRepository ──► PostgreSQL
+      │
+SteamAPIClient ──► Steam Web API
+```
+
+La seguridad es manejada por un filtro JWT stateless (`OncePerRequestFilter`) configurado en `SecurityConfig`, que intercepta cada request y valida el Bearer token antes de conceder acceso.
+
+---
+
+## Primeros Pasos
+
+### Requisitos
+
+- Java 17+
+- Gradle
+- Base de datos PostgreSQL
+
+### Ejecución local
+
+1. Clonar el repositorio:
+```bash
+git clone https://github.com/NicoVelasco96/Player-Service.git
+cd Player-Service
+```
+
+2. Configurar las variables de entorno (ver sección correspondiente).
+
+3. Ejecutar la aplicación:
+```bash
+./gradlew bootRun
+```
+
+4. Acceder a Swagger UI en:
+```
+http://localhost:8081/api/docs
+```
+
+---
+
+## Variables de Entorno
+
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `SPRING_DATASOURCE_URL` | URL JDBC de PostgreSQL | `jdbc:postgresql://host:port/db` |
+| `SPRING_DATASOURCE_USERNAME` | Usuario de la base de datos | `postgres` |
+| `SPRING_DATASOURCE_PASSWORD` | Contraseña de la base de datos | `tupassword` |
+| `JWT_SECRET` | Clave secreta para firmar JWT (mín. 256 bits) | `supersecretkey...` |
+| `STEAM_API_KEY` | Clave de la Steam Web API (opcional) | `ABC123...` |
+
+> ⚠️ Nunca subas credenciales reales al repositorio. Siempre usá variables de entorno.
+
+---
+
+## Endpoints
+
+URL Base: `http://localhost:8081`
+
+| Método | Endpoint | Auth | Descripción |
+|---|---|---|---|
+| `POST` | `/api/players/register` | ❌ | Registrar un nuevo jugador |
+| `POST` | `/api/players/login` | ❌ | Autenticarse y obtener JWT |
+| `GET` | `/api/players/{id}` | ✅ | Obtener perfil por ID |
+| `POST` | `/api/players/{id}/steam` | ✅ | Vincular cuenta de Steam |
+| `GET` | `/api/players/service-token` | ✅ | Generar token de servicio |
+
+### Ejemplo: Registro
+
+```json
+POST /api/players/register
+{
+  "username": "nicol",
+  "email": "nicol@example.com",
+  "password": "securepassword",
+  "steamId": "76561199383658965"
+}
+```
+
+### Ejemplo: Login
+
+```json
+POST /api/players/login
+{
+  "username": "nicol",
+  "password": "securepassword"
+}
+```
+
+Respuesta:
+```json
+{
+  "token": "eyJhbGciOiJIUzM4NCJ9...",
+  "player": {
+    "id": 1,
+    "username": "nicol",
+    "steamDisplayName": "NicolV96",
+    "steamLevel": 5,
+    "steamProfileUrl": "https://steamcommunity.com/profiles/...",
+    "status": "ACTIVE"
+  }
+}
+```
+
+---
+
+## Estructura del Proyecto
+
+```
+src/main/java/com/tournament/player/
+├── client/
+│   └── SteamAPIClient.java         # Integración con Steam Web API
+├── config/
+│   ├── AppConfig.java              # Configuración WebClient y OpenAPI
+│   └── SecurityConfig.java         # Spring Security + filtro JWT
+├── controller/
+│   └── PlayerController.java       # Endpoints REST
+├── dto/
+│   └── PlayerDTO.java              # DTOs de request/response
+├── model/
+│   ├── Player.java                 # Entidad JPA
+│   └── PlayerStatus.java           # Enum de estado
+├── repository/
+│   └── IPlayerRepository.java      # Repositorio Spring Data JPA
+├── service/
+│   ├── IPlayerService.java         # Interfaz del servicio
+│   ├── PlayerService.java          # Lógica de negocio
+│   └── JWTService.java             # Generación y validación de JWT
+└── PlayerServiceApplication.java
+```
+
+</details>
+
+---
+
+<details>
+<summary><b>🇺🇸 English</b></summary>
 
 ## Overview
 
-**Player Service** is part of a larger tournament management platform built with a microservices architecture. This service handles:
+**Player Service** is a microservice responsible for player registration, authentication via JWT, and Steam account integration. Part of a larger tournament management platform built with a microservices architecture.
 
+This service handles:
 - Player registration and authentication
 - JWT-based stateless security
 - Steam account linking and profile enrichment
@@ -45,8 +206,6 @@ Microservice responsible for player registration, authentication via JWT, and St
 
 ## Architecture
 
-This service follows a layered architecture pattern:
-
 ```
 PlayerController
       │
@@ -67,7 +226,7 @@ Security is handled by a stateless JWT filter (`OncePerRequestFilter`) configure
 
 - Java 17+
 - Gradle
-- PostgreSQL database (local or cloud)
+- PostgreSQL database
 
 ### Run locally
 
@@ -86,18 +245,16 @@ cd Player-Service
 
 4. Access Swagger UI at:
 ```
-http://localhost:8081/swagger-ui.html
+http://localhost:8081/api/docs
 ```
 
 ---
 
 ## Environment Variables
 
-Configure the following variables in your environment or IDE run configuration:
-
 | Variable | Description | Example |
 |---|---|---|
-| `SPRING_DATASOURCE_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://host:port/db?options=-c%20timezone%3DUTC` |
+| `SPRING_DATASOURCE_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://host:port/db` |
 | `SPRING_DATASOURCE_USERNAME` | Database username | `postgres` |
 | `SPRING_DATASOURCE_PASSWORD` | Database password | `yourpassword` |
 | `JWT_SECRET` | Secret key for JWT signing (min 256 bits) | `supersecretkey...` |
@@ -111,22 +268,13 @@ Configure the following variables in your environment or IDE run configuration:
 
 Base URL: `http://localhost:8081`
 
-| Method | Endpoint | Auth Required | Description |
+| Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | `POST` | `/api/players/register` | ❌ | Register a new player |
 | `POST` | `/api/players/login` | ❌ | Authenticate and receive JWT |
 | `GET` | `/api/players/{id}` | ✅ | Get player profile by ID |
 | `POST` | `/api/players/{id}/steam` | ✅ | Link a Steam account |
-
-### Authentication
-
-Protected endpoints require a Bearer token in the `Authorization` header:
-
-```
-Authorization: Bearer <your_jwt_token>
-```
-
-Obtain the token by calling `/api/players/login`.
+| `GET` | `/api/players/service-token` | ✅ | Generate service token |
 
 ### Example: Register
 
@@ -136,7 +284,7 @@ POST /api/players/register
   "username": "nicol",
   "email": "nicol@example.com",
   "password": "securepassword",
-  "steamId": "76561198XXXXXXX"
+  "steamId": "76561199383658965"
 }
 ```
 
@@ -157,9 +305,9 @@ Response:
   "player": {
     "id": 1,
     "username": "nicol",
-    "email": "nicol@example.com",
     "steamDisplayName": "NicolV96",
-    "steamAvatarUrl": "https://...",
+    "steamLevel": 5,
+    "steamProfileUrl": "https://steamcommunity.com/profiles/...",
     "status": "ACTIVE"
   }
 }
@@ -182,7 +330,7 @@ src/main/java/com/tournament/player/
 │   └── PlayerDTO.java              # Request/Response DTOs
 ├── model/
 │   ├── Player.java                 # JPA Entity
-│   └── PlayerStatus.java           # Enum
+│   └── PlayerStatus.java           # Status enum
 ├── repository/
 │   └── IPlayerRepository.java      # Spring Data JPA repository
 ├── service/
@@ -192,8 +340,10 @@ src/main/java/com/tournament/player/
 └── PlayerServiceApplication.java
 ```
 
+</details>
+
 ---
 
-## License
+## 📜 Licencia / License
 
-This project is part of a personal portfolio. Feel free to use it as reference.
+Este proyecto es parte de un portafolio personal. / This project is part of a personal portfolio.
